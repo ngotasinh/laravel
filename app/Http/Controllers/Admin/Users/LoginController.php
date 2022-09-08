@@ -9,38 +9,47 @@ use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
-    public function index()
-    {
-        return view('admin.users.login', [
-            'title' => 'Đăng Nhập Hệ Thống'
-        ]);
-    }
+	/**
+	 * View page Login
+	 */
+	public function index()
+	{
+		return view('admin.users.login', [
+			'title' => 'Đăng Nhập Hệ Thống'
+		]);
+	}
 
-    public function store(Request $request)
-    {
-        $rules = [
-            'email' =>'required|email',
-            'password' => 'required|min:8'
-        ];
+	/**
+	 * Thực hiện Login
+	 */
+	public function store(Request $request)
+	{
+		$rules = [
+			'email' => 'required|email',
+			'password' => 'required|min:8'
+		];
 
-        $messages = [
-            'email.required' => 'Email là trường bắt buộc',
-            'email.email' => 'Email không đúng định dạng',
-            'password.required' => 'Mật khẩu là trường bắt buộc',
-            'password.min' => 'Mật khẩu phải chứa ít nhất 8 ký tự',
-        ];
+		$messages = [
+			'email.required' => 'Email là trường bắt buộc',
+			'email.email' => 'Email không đúng định dạng',
+			'password.required' => 'Mật khẩu là trường bắt buộc',
+			'password.min' => 'Mật khẩu phải chứa ít nhất 8 ký tự',
+		];
 
-        $this->validate($request, $rules, $messages);
+		$this->validate($request, $rules, $messages);
 
-        if (Auth::attempt([
-            'email' => $request->input('email'),
-            'password' => $request->input('password')
-        ], $request->input('remember'))) {
+		$isLogin = Auth::attempt(
+			[
+				'email' => $request->input('email'), 'password' => $request->input('password')
+			],
+			$request->input('remember')
+		);
 
-            return redirect()->route('admin');
-        }
+		if ($isLogin) {
+			return redirect()->route('admin');
+		}
 
-        Session::flash('error', 'Email hoặc Password không đúng');
-        return redirect()->back();
-    }
+		Session::flash('error', 'Email hoặc Password không đúng');
+		return redirect()->back();
+	}
 }
